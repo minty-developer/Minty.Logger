@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <PackageId>Minty.Logger</PackageId>
+    <Version>0.7.0</Version>
+    <Authors>YT_Minty</Authors>
+    <Company>Minty</Company>
+    <Description>Simple and beautiful console logger for .NET.</Description>
+    <PackageTags>logger logging console aspnet</PackageTags>
+    <RepositoryUrl>https://github.com/USERNAME/Minty.Logger</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
