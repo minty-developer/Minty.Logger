@@ -143,7 +143,6 @@ public static class Print
                 sw.Stop();
                 elapsed = sw.Elapsed.TotalMilliseconds;
             }
-            Console.WriteLine($"ELAPSED | {elapsed:F2} ms");
             Console.WriteLine("========================================================================");
             Console.WriteLine("  [HTTP]");
             Console.WriteLine($"TRACE   | {context.TraceIdentifier}");
@@ -152,6 +151,7 @@ public static class Print
             if(response.StatusCode >= 300) Console.ForegroundColor = ConsoleColor.Yellow;
             if(response.StatusCode >= 400) Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"{response.StatusCode}");
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"METHOD  | {request.Scheme} {request.Method}");
             Console.WriteLine($"TYPE    | {request.ContentType ?? "-"}");
             Console.WriteLine($"FROM    | {request.Host}");
