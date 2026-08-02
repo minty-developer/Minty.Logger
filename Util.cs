@@ -7,6 +7,11 @@ using System.Runtime.CompilerServices;
 
 namespace Minty.Logger.Util;
 
+/*
+git tag v0.7.x
+git push origin v0.7.x
+*/
+
 public static class Print
 {
     public static void Info(string context)
