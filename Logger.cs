@@ -5,11 +5,11 @@ namespace Minty.Logger;
 
 public static partial class Logger
 {
+    public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
+
     public static void Info(string context) => info(context);
 
     public static void Success(string context) => success(context);
-
-    public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
 
     public static void Warn(string context) => warn(null, context);
     public static void Warn(string warncode, string context) => warn(warncode, context);
