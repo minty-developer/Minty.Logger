@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System.Runtime.CompilerServices;
 
-namespace Minty.Logger.Log;
+namespace Minty.Logger;
 
 public static partial class Logger
 {

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 
-namespace Minty.Logger.Log;
+namespace Minty.Logger;
 
 /*
 git tag v0.x.x
