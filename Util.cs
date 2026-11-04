@@ -1,15 +1,11 @@
 using Microsoft.AspNetCore.Http;
-using System.Net.Cache;
-using System.Net.Mime;
 using System.Diagnostics;
-using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace Minty.Logger.Util;
 
 /*
-git tag v0.7.x
-git push origin v0.7.x
+git tag v0.x.x
+git push origin v0.x.x
 */
 
 public static class Print
@@ -114,7 +110,7 @@ public static class Print
         {
             context.Items[StopwatchKey] = Stopwatch.StartNew();
             HttpRequest request = context.Request;
-            Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
         }
         public static void resOut(HttpContext context)
         {
