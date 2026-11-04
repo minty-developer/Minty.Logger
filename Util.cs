@@ -1,16 +1,33 @@
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 
-namespace Minty.Logger.Util;
+namespace Minty.Logger.Log;
 
 /*
 git tag v0.x.x
 git push origin v0.x.x
 */
 
-public static class Print
+/*
+# 그리고 앞으로 만들면 좋을 기능들
+
+✅ Console 출력
+✅ Warning 로그
+✅ Debug 로그
+✅ http 로그
+⏳ 로그 레벨 필터 (Logger.Level = LogLevel.Warning)
+⏳ 파일 저장
+⏳ Formatter 교체
+⏳ HTTP 요청 전용 로그
+⏳ RequestId 자동 생성
+⏳ 비동기 파일 기록
+⏳ JSON 로그 출력
+*/
+
+public static partial class Logger
 {
-    public static void Info(string context)
+    private static void info(string context)
     {
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
@@ -21,7 +38,7 @@ public static class Print
         Console.Write("    | ");
         Console.WriteLine(context);
     }
-    public static void Success(string context)
+    private static void success(string context)
     {
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
@@ -32,87 +49,69 @@ public static class Print
         Console.Write(" | ");
         Console.WriteLine(context);
     }
-    public static void Debug<T>(string name, T value)
+    private static void debug<T>(string name, T value)
     {
         Console.WriteLine($"                          [Debug]   | {name}: {value}");
     }
-    public static void Warn(string context)
+    private static void warn(string? warnCode, string context)
     {
         Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
+        Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ");
         Console.ResetColor();
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.Write("[Warn]");
         Console.ResetColor();
-        Console.WriteLine($"    | {context}");
+        Console.Write("    | ");
+        if(warnCode is not null)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"{warnCode}");
+            Console.ResetColor();
+            Console.Write(" | ");
+        }
+        Console.WriteLine($"{context}");
     }
-    public static void Warn(string warnCode, string context)
-    {
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] ");
-        Console.ResetColor();
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("[Warn]");
-        Console.ResetColor();
-        Console.Write($"    | ");
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write($"{warnCode}");
-        Console.ResetColor();
-        Console.Write(" | ");
-        Console.WriteLine(context);
-    }
-    public static void Error(string context)
+    private static void error(string? errorCode, string? context, Exception? error)
     {
         Console.WriteLine("========================================================================");
-        Console.Write($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}]");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($" [Error] ");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine($"  | {context}");
-        Console.WriteLine("========================================================================");
-        Console.ResetColor();
-    }
-    public static void Error(string errorCode, string context)
-    {
-        Console.WriteLine("========================================================================");
-        Console.Write($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}]");
+        Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}]");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.Write($" [Error] ");
         Console.ForegroundColor = ConsoleColor.White;
         Console.Write($"  | ");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($"{errorCode}");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine($" | {context}");
+        if(errorCode is not null)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"{errorCode}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($" | ");
+        }
+        if(context is not null) {
+            Console.WriteLine($"{context}");
+        } else if(error is not null)
+        {
+                    Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write(error.GetType().Name);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine($" | {error.Message}");
+            if (error.StackTrace != null) Console.WriteLine($"{error.StackTrace.Split(Environment.NewLine)[0]}");
+        } else
+        {
+            throw new ArgumentException("인자가 잘못 전달되었습니다.");
+        }
         Console.WriteLine("========================================================================");
         Console.ResetColor();
     }
-    public static void Error(Exception error)
-    {
-        Console.WriteLine("========================================================================");
-        Console.Write($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}]");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($" [Error] ");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write($"  | ");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write(error.GetType().Name);
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine($" | {error.Message}");
-        if (error.StackTrace != null) Console.WriteLine($"{error.StackTrace.Split(Environment.NewLine)[0]}");
-        Console.WriteLine("========================================================================");
-        Console.ResetColor();
-    }
-    public static class Http
+    public static partial class Http
     {
         private const string StopwatchKey = "__MintyLoggerStopwatch";
-        public static void reqIn(HttpContext context)
+        private static void request(HttpContext context)
         {
             context.Items[StopwatchKey] = Stopwatch.StartNew();
             HttpRequest request = context.Request;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
         }
-        public static void resOut(HttpContext context)
+        private static void response(HttpContext context)
         {
             HttpResponse response = context.Response;
             long elapsed = 0;
@@ -129,11 +128,11 @@ public static class Print
             Console.ResetColor();
             Console.WriteLine($" in {elapsed}ms ({response.ContentLength}b)");
         }
-        public static void startHttpReqRes(HttpContext context)
+        private static void httpsStart(HttpContext context)
         {
             context.Items[StopwatchKey] = Stopwatch.StartNew();
         }
-        public static void httpReqRes(HttpContext context)
+        private static void httpsEnd(HttpContext context)
         {
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
