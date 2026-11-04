@@ -5,6 +5,8 @@ namespace Minty.Logger;
 
 public static partial class Logger
 {
+    public static LogLevel Level = LogLevel.Info;
+
     public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
 
     public static void Info(string context) => info(context);

@@ -16,7 +16,7 @@ git push origin v0.x.x
 ✅ Warning 로그
 ✅ Debug 로그
 ✅ http 로그
-⏳ 로그 레벨 필터 (Logger.Level = LogLevel.Warning)
+✅ 로그 레벨 필터 (Logger.Level = LogLevel.Warning)
 ⏳ 파일 저장
 ⏳ Formatter 교체
 ⏳ HTTP 요청 전용 로그
@@ -29,6 +29,7 @@ public static partial class Logger
 {
     private static void info(string context)
     {
+        if(Level > LogLevel.Info) return;
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
         Console.ResetColor();
@@ -40,6 +41,7 @@ public static partial class Logger
     }
     private static void success(string context)
     {
+        if(Level > LogLevel.Info) return;
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
         Console.ResetColor();
@@ -51,10 +53,12 @@ public static partial class Logger
     }
     private static void debug<T>(string name, T value)
     {
+        if(Level > LogLevel.Debug) return;
         Console.WriteLine($"                          [Debug]   | {name}: {value}");
     }
     private static void warn(string? warnCode, string context)
     {
+        if(Level> LogLevel.Warn) return;
         Console.ForegroundColor = ConsoleColor.Gray;
         Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ");
         Console.ResetColor();
@@ -73,6 +77,7 @@ public static partial class Logger
     }
     private static void error(string? errorCode, string? context, Exception? error)
     {
+        if(Level > LogLevel.Error) return;
         Console.WriteLine("========================================================================");
         Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}]");
         Console.ForegroundColor = ConsoleColor.Red;
@@ -107,12 +112,14 @@ public static partial class Logger
         private const string StopwatchKey = "__MintyLoggerStopwatch";
         private static void request(HttpContext context)
         {
+            if(Level > LogLevel.Info) return;
             context.Items[StopwatchKey] = Stopwatch.StartNew();
             HttpRequest request = context.Request;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
         }
         private static void response(HttpContext context)
         {
+            if(Level > LogLevel.Info) return;
             HttpResponse response = context.Response;
             long elapsed = 0;
             if (context.Items[StopwatchKey] is Stopwatch sw)
@@ -130,10 +137,12 @@ public static partial class Logger
         }
         private static void httpsStart(HttpContext context)
         {
+            if(Level > LogLevel.Info) return;
             context.Items[StopwatchKey] = Stopwatch.StartNew();
         }
         private static void httpsEnd(HttpContext context)
         {
+            if(Level > LogLevel.Info) return;
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
             Stopwatch? sw = context.Items[StopwatchKey] as Stopwatch;
