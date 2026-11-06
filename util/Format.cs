@@ -41,6 +41,7 @@ public static partial class Logger
             }
         }
         Console.WriteLine(buffer.ToString());
+        addLog(log.ToString());
     }
 
     private static Token[] compileFormat(LoggerId? id, string format)
