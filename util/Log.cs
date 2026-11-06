@@ -7,6 +7,7 @@ namespace Minty.Log;
 /*
 git tag v0.x.x
 git push origin v0.x.x
+git merge --no-ff
 */
 
 /*
@@ -62,7 +63,7 @@ public static partial class Logger
             if(level > LogLevel.Info) return;
             context.Items[StopwatchKey] = Stopwatch.StartNew();
             HttpRequest request = context.Request;
-            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
+            logWithFormat(LoggerId.HttpReq, $"{request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
         }
         private static void response(HttpContext context)
         {
@@ -74,13 +75,7 @@ public static partial class Logger
                 sw.Stop();
                 elapsed = sw.ElapsedMilliseconds;
             }
-            Console.Write($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] Response end with ");
-            Console.ForegroundColor = ConsoleColor.Green;
-            if(response.StatusCode >= 300) Console.ForegroundColor = ConsoleColor.Yellow;
-            if(response.StatusCode >= 400) Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"{response.StatusCode}");
-            Console.ResetColor();
-            Console.WriteLine($" in {elapsed}ms ({response.ContentLength}b)");
+            logWithFormat(LoggerId.HttpRes, $"Response end with {Keyword.Color.GetStatusCodeColor(response.StatusCode)}{response.StatusCode}{Keyword.Color.Reset} in {elapsed}ms ({response.ContentLength}b)");
         }
         private static void httpsStart(HttpContext context)
         {
@@ -89,7 +84,7 @@ public static partial class Logger
         }
         private static void httpsEnd(HttpContext context)
         {
-            if(level > LogLevel.Info) return;
+            if(level > LogLevel.Debug) return;
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
             Stopwatch? sw = context.Items[StopwatchKey] as Stopwatch;

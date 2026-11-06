@@ -23,23 +23,25 @@ public static partial class Logger
     private static void logWithFormat(LoggerId id, string message)
     {
         Token[] format = getFormat(id) ?? defaultFormat;
+        var buffer = new StringBuilder();
         var log = new StringBuilder();
         var Now = DateTime.Now;
         foreach(var token in format)
         {
             switch(token.Id)
             {
-                case TokenId.Text: { log.Append(token.Value); break; }
-                case TokenId.Message: { log.Append(message); break; }
-                case TokenId.Level: { log.Append(token.Value ?? id.ToString()); break;}
-                case TokenId.Date: { log.Append(Now.ToString("yyyy-MM-dd")); break; }
-                case TokenId.Time: { log.Append(Now.ToString("HH:mm:ss.fff")); break; }
-                case TokenId.LevelColor: { Console.Write(log.ToString()); Console.ForegroundColor = levelColorMap.GetValueOrDefault(id); log.Clear(); break; }
-                case TokenId.Color: { Console.Write(log.ToString()); Console.ForegroundColor = (ConsoleColor)token.Value!; log.Clear(); break; }
-                case TokenId.ColorReset: { Console.Write(log.ToString()); Console.ResetColor(); log.Clear(); break; }
+                case TokenId.Text: { buffer.Append(token.Value); log.Append(token.Value); break; }
+                case TokenId.Message: { buffer.Append(message); log.Append(message); break; }
+                case TokenId.Level: { buffer.Append(token.Value ?? id.ToString()); log.Append(token.Value ?? id.ToString()); break;}
+                case TokenId.Date: { buffer.Append(Now.ToString("yyyy-MM-dd")); log.Append(Now.ToString("yyyy-MM-dd")); break; }
+                case TokenId.Time: { buffer.Append(Now.ToString("HH:mm:ss.fff")); log.Append(Now.ToString("HH:mm:ss.fff")); break; }
+                case TokenId.LevelColor: { Console.Write(buffer.ToString()); Console.ForegroundColor = levelColorMap.GetValueOrDefault(id); buffer.Clear(); break; }
+                case TokenId.Color: { Console.Write(buffer.ToString()); Console.ForegroundColor = (ConsoleColor)token.Value!; buffer.Clear(); break; }
+                case TokenId.ColorReset: { Console.Write(buffer.ToString()); Console.ResetColor(); buffer.Clear(); break; }
             }
         }
-        Console.WriteLine(log.ToString());
+        Console.WriteLine(buffer.ToString());
+        addLog(log.ToString());
     }
 
     private static Token[] compileFormat(LoggerId? id, string format)

@@ -14,6 +14,14 @@ public static class Keyword
         public const string Blue = "{Blue}";
         public const string Gray = "{Gray}";
         public const string Reset = "{Reset}";
+
+        public static string GetStatusCodeColor(int statusCode)
+        {
+            string buffer = Green;
+            if(statusCode >= 300) buffer = Yellow;
+            if(statusCode >= 400) buffer = Red;
+            return buffer;
+        }
     }
 }
 
