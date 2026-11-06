@@ -9,6 +9,12 @@ public static partial class Logger
 
     public static void SetLogFilter(LogLevel minLevel) => level = minLevel;
 
+    public static void Export(string path) => export(path);
+    public static async Task ExportAsync(string path) => await exportAsync(path);
+
+    public static void AutoExport(string path) => autoExport(path);
+    public static async Task AutoExportAsync(string path) => await autoExportAsync(path);
+
     public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
 
     public static void Info(string context) => info(context);
