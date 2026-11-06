@@ -30,14 +30,7 @@ public static partial class Logger
     private static void info(string context)
     {
         if(Level > LogLevel.Info) return;
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
-        Console.ResetColor();
-        Console.ForegroundColor = ConsoleColor.Blue;
-        Console.Write("[Info]");
-        Console.ResetColor();
-        Console.Write("    | ");
-        Console.WriteLine(context);
+        parseFormat(LoggerId.Info, context);
     }
     private static void success(string context)
     {

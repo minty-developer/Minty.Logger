@@ -13,7 +13,9 @@ public static partial class Logger
     public static class Keyword
     {
         public const string Date = "{date}";
+        public const string Time = "{time}";
         public const string Message = "{message}";
+        public const string Level = "{level}";
         public static class Color
         {
             public const string Red = "{Red}";

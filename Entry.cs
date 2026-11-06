@@ -7,6 +7,10 @@ public static partial class Logger
 {
     public static LogLevel Level = LogLevel.Info;
 
+    public static void SetDefaultFormat(string format) => defaultFormat = format;
+    public static void SetDebugFormat(string format) => Formats.debugFormat = format;
+    public static void SetInfoFormat(string format) => Formats.informationFormat = format;
+
     public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
 
     public static void Info(string context) => info(context);
