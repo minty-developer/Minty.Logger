@@ -1,15 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using System.Runtime.CompilerServices;
 
-namespace Minty.Logger;
+namespace Minty.Log;
 
 public static partial class Logger
 {
-    public static LogLevel Level = LogLevel.Info;
+    public static void SetFormat(LoggerId loggerId, string format) => setFormat(loggerId, format);
 
-    public static void SetDefaultFormat(string format) => defaultFormat = format;
-    public static void SetDebugFormat(string format) => Formats.debugFormat = format;
-    public static void SetInfoFormat(string format) => Formats.informationFormat = format;
+    public static void SetLogFilter(LogLevel minLevel) => level = minLevel;
 
     public static void Debug<T>(T value, [CallerArgumentExpression(nameof(value))] string? name = null) => debug(name?? "", value);
 

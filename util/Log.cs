@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 
-namespace Minty.Logger;
+namespace Minty.Log;
 
 /*
 git tag v0.x.x
@@ -27,92 +27,46 @@ git push origin v0.x.x
 
 public static partial class Logger
 {
+    private static LogLevel level = LogLevel.Info;
     private static void info(string context)
     {
-        if(Level > LogLevel.Info) return;
-        parseFormat(LoggerId.Info, context);
+        if(level > LogLevel.Info) return;
+        logWithFormat(LoggerId.Info, context);
     }
     private static void success(string context)
     {
-        if(Level > LogLevel.Info) return;
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "] ");
-        Console.ResetColor();
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.Write("[Success]");
-        Console.ResetColor();
-        Console.Write(" | ");
-        Console.WriteLine(context);
+        if(level > LogLevel.Info) return;
+        logWithFormat(LoggerId.Success, context);
     }
     private static void debug<T>(string name, T value)
     {
-        if(Level > LogLevel.Debug) return;
-        Console.WriteLine($"                          [Debug]   | {name}: {value}");
+        if(level > LogLevel.Debug) return;
+        logWithFormat(LoggerId.Debug, $"{name}: {value}");
     }
     private static void warn(string? warnCode, string context)
     {
-        if(Level> LogLevel.Warn) return;
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] ");
-        Console.ResetColor();
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("[Warn]");
-        Console.ResetColor();
-        Console.Write("    | ");
-        if(warnCode is not null)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($"{warnCode}");
-            Console.ResetColor();
-            Console.Write(" | ");
-        }
-        Console.WriteLine($"{context}");
+        if(level> LogLevel.Warn) return;
+        logWithFormat(LoggerId.Warn, warnCode?.ToString() + ((warnCode is not null)? " ": "") + context);
     }
     private static void error(string? errorCode, string? context, Exception? error)
     {
-        if(Level > LogLevel.Error) return;
-        Console.WriteLine("========================================================================");
-        Console.Write($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}]");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.Write($" [Error] ");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.Write($"  | ");
-        if(errorCode is not null)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write($"{errorCode}");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write($" | ");
-        }
-        if(context is not null) {
-            Console.WriteLine($"{context}");
-        } else if(error is not null)
-        {
-                    Console.ForegroundColor = ConsoleColor.Red;
-            Console.Write(error.GetType().Name);
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine($" | {error.Message}");
-            if (error.StackTrace != null) Console.WriteLine($"{error.StackTrace.Split(Environment.NewLine)[0]}");
-        } else
-        {
-            throw new ArgumentException("인자가 잘못 전달되었습니다.");
-        }
-        Console.WriteLine("========================================================================");
-        Console.ResetColor();
+        if(level > LogLevel.Error) return;
+        logWithFormat(LoggerId.Error, error?.Message + ((errorCode is not null && error is not null)? " ": "") + context?.ToString());
+        if (error?.StackTrace != null) Console.WriteLine($"{error.StackTrace.Split(Environment.NewLine)[0]}");
     }
     public static partial class Http
     {
         private const string StopwatchKey = "__MintyLoggerStopwatch";
         private static void request(HttpContext context)
         {
-            if(Level > LogLevel.Info) return;
+            if(level > LogLevel.Info) return;
             context.Items[StopwatchKey] = Stopwatch.StartNew();
             HttpRequest request = context.Request;
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {request.Scheme} {request.Method} {request.Path}{request.QueryString} from {request.Host}");
         }
         private static void response(HttpContext context)
         {
-            if(Level > LogLevel.Info) return;
+            if(level > LogLevel.Info) return;
             HttpResponse response = context.Response;
             long elapsed = 0;
             if (context.Items[StopwatchKey] is Stopwatch sw)
@@ -130,12 +84,12 @@ public static partial class Logger
         }
         private static void httpsStart(HttpContext context)
         {
-            if(Level > LogLevel.Info) return;
+            if(level > LogLevel.Info) return;
             context.Items[StopwatchKey] = Stopwatch.StartNew();
         }
         private static void httpsEnd(HttpContext context)
         {
-            if(Level > LogLevel.Info) return;
+            if(level > LogLevel.Info) return;
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
             Stopwatch? sw = context.Items[StopwatchKey] as Stopwatch;
