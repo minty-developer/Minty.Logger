@@ -5,9 +5,8 @@ public static partial class Logger
     private static string parseFormat(LoggerId id, string? message = null)
     {
         ArgumentNullException.ThrowIfNull(message);
-        string format = defaultFormat;
+        string format = getFormat(id) ?? defaultFormat;
         string log = "";
-        if(getFormat(id) is not null) format = getFormat(id)!;
 
         string buffer = "";
         bool isKeyword = false;
@@ -41,18 +40,36 @@ public static partial class Logger
     {
         switch(buffer)
         {
+            // Mecros
             case Keyword.Date:
                 log += DateTime.Now.Date;
                 break;
+
+            // Message
             case Keyword.Message:
                 log += message;
                 break;
 
+            // Colors
             case Keyword.Color.Red:
                 buffer = "";
                 Console.Write(log);
                 log = "";
                 Console.ForegroundColor = ConsoleColor.Red;
+                isKeyword = false;
+                break;
+            case Keyword.Color.Blue:
+                buffer = "";
+                Console.Write(log);
+                log = "";
+                Console.ForegroundColor = ConsoleColor.Blue;
+                isKeyword = false;
+                break;
+            case Keyword.Color.Gray:
+                buffer = "";
+                Console.Write(log);
+                log = "";
+                Console.ForegroundColor = ConsoleColor.Gray;
                 isKeyword = false;
                 break;
             case Keyword.Color.Reset:

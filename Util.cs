@@ -18,8 +18,8 @@ git push origin v0.x.x
 ✅ http 로그
 ✅ 로그 레벨 필터 (Logger.Level = LogLevel.Warning)
 ⏳ 파일 저장
-⏳ Formatter 교체
-⏳ HTTP 요청 전용 로그
+✅ Formatter 교체
+✅ HTTP 요청 전용 로그
 ⏳ RequestId 자동 생성
 ⏳ 비동기 파일 기록
 ⏳ JSON 로그 출력

@@ -17,6 +17,8 @@ public static partial class Logger
         public static class Color
         {
             public const string Red = "{Red}";
+            public const string Blue = "{Blue}";
+            public const string Gray = "{Gray}";
             public const string Reset = "{Reset}";
         }
     }
